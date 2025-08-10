@@ -3,34 +3,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CurlingStoneTrackerApp.MainPage">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
-            <Image
-                Source="dotnet_bot.png"
-                HeightRequest="185"
-                Aspect="AspectFit"
-                SemanticProperties.Description="dot net bot in a hovercraft number nine" />
-
-            <Label
-                Text="Hello, World!"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
-
-            <Label
-                Text="Welcome to &#10;.NET Multi-platform App UI"
-                Style="{StaticResource SubHeadline}"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I" />
-
-            <Button
-                x:Name="CounterBtn"
-                Text="Click me" 
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Fill" />
-        </VerticalStackLayout>
-    </ScrollView>
-
+    <Grid>
+        <StackLayout Orientation="Vertical">
+            <Label>
+                Curling Stone Tracker App V1.0
+            </Label>
+            <!-- ScanButton is the button that can be clicked to refresh the BLE Devices in the list
+                 ScanButton_Clicked is the function that is run when the button is clicked -->
+            <Button x:Name="ScanBtn"
+                    Margin="10"
+                    Clicked="OnScanClicked"
+                    Text="Scan" />
+            <!-- ListView is the list that will be filled with the BLE Devices detected
+                 FoundBluetoothDevicesListView_ItemTapped is the function that is called when a device is selected -->
+            <ListView x:Name="foundBleDevicesListView"
+                      Footer=""
+                      ItemTapped="OnFoundBluetoothDevicesListViewItemClicked" />
+        </StackLayout>
+        <!-- the "IsBusyIndicator" is the circle that you see when the scan button is clicked and the device is searching
+             for Bluetooth devices -->
+        <ActivityIndicator x:Name="IsBusyIndicator"
+                           Scale="0.3" />
+    </Grid>
 </ContentPage>
