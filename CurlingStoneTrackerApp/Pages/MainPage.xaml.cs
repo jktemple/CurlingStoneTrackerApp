@@ -1,4 +1,5 @@
 ﻿using Plugin.BLE;
+using Plugin.BLE.Abstractions;
 using Plugin.BLE.Abstractions.Contracts;
 
 namespace CurlingStoneTrackerApp
@@ -58,9 +59,30 @@ namespace CurlingStoneTrackerApp
             IsBusyIndicator.IsVisible = IsBusyIndicator.IsRunning = !(ScanBtn.IsEnabled = true);
         }
 
-        private void OnFoundBluetoothDevicesListViewItemClicked(object sender, EventArgs e) 
-        { 
+        private async void OnFoundBluetoothDevicesListViewItemClicked(object sender, ItemTappedEventArgs e) 
+        {
+            IsBusyIndicator.IsVisible = IsBusyIndicator.IsRunning = !(ScanBtn.IsEnabled = false);        // Switch on IsBusy indicator
+            IDevice selectedItem = e.Item as IDevice;                                                       // The item selected is an IDevice (detected BLE device). Therefore we have to cast the selected item to an IDevice
 
+            if (selectedItem.State == DeviceState.Connected)                                                // Check first if we are already connected to the BLE Device 
+            {
+                await Navigation.PushAsync(new BLEServicePage(selectedItem));                                   // Navigate to the Services Page to show the services of the selected BLE Device
+            }
+            else
+            {
+                try
+                {
+                    var connectParameters = new ConnectParameters(false, true);
+                    await _bluetoothAdapter.ConnectToDeviceAsync(selectedItem, connectParameters);          // if we are not connected, then try to connect to the BLE Device selected
+                    await Navigation.PushAsync(new BLEServicePage(selectedItem));                               // Navigate to the Services Page to show the services of the selected BLE Device
+                }
+                catch
+                {
+                    await DisplayAlert("Error connecting", $"Error connecting to BLE device: {selectedItem.Name ?? "N/A"}", "Retry");       // give an error message if it is not possible to connect
+                }
+            }
+
+            IsBusyIndicator.IsVisible = IsBusyIndicator.IsRunning = !(ScanBtn.IsEnabled = true);         // switch off the "Isbusy" indicator
         }
 
     }
